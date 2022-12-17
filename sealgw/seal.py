@@ -351,13 +351,9 @@ class Seal:
         else:
             sigma_array = np.array(sigma_list)
 
-            time_arrays = np.array([])
-            snr_arrays = np.array([])
-            ntimes_array = np.array([])
-            for snr in snr_list:
-                snr_arrays = np.append(snr_arrays, snr.data)
-                time_arrays = np.append(time_arrays, snr.sample_times.data)
-                ntimes_array = np.append(ntimes_array, len(snr.sample_times.data))
+            time_arrays = np.array([snr.sample_times.data for snr in snr_list])
+            snr_arrays = np.array([snr.data for snr in snr_list])
+            ntimes_array = np.array([len(snr.sample_times.data) for snr in snr_list])
 
             start_time = injection_parameters["geocent_time"] - 0.01
             end_time = injection_parameters["geocent_time"] + 0.01
