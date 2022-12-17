@@ -114,7 +114,7 @@ def generate_random_injection_parameters(
     return np.stack(parameter_arrays, axis=1)
 
 
-def get_injection_parameters(values, names=None):
+def zip_injection_parameters(values, names=None):
     return dict(zip(names or PARAMETERS, values))
 
 
