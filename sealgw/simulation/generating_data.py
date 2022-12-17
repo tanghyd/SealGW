@@ -6,6 +6,10 @@ from pycbc.filter import matched_filter
 from pycbc.types.frequencyseries import FrequencySeries
 from pycbc.types.timeseries import TimeSeries
 
+PARAMETERS = (
+    "chirp_mass", "mass_ratio", "a_1", "a_2", "tilt_1", "tilt_2", "phi_12", "phi_jl",
+    "theta_jn", "psi", "phase", "ra", "dec", "luminosity_distance", "geocent_time",
+)  # fmt: pass
 
 def generate_random_spin(Nsample):
     """
@@ -144,31 +148,8 @@ def generate_random_inject_paras(
     return samples
 
 
-def get_inj_paras(
-    parameter_values,
-    parameter_names=[
-        "chirp_mass",
-        "mass_ratio",
-        "a_1",
-        "a_2",
-        "tilt_1",
-        "tilt_2",
-        "phi_12",
-        "phi_jl",
-        "theta_jn",
-        "psi",
-        "phase",
-        "ra",
-        "dec",
-        "luminosity_distance",
-        "geocent_time",
-    ],
-):
-    inj_paras = dict()
-    for i in range(len(parameter_names)):
-        inj_paras[parameter_names[i]] = parameter_values[i]
-    return inj_paras
-
+def get_inj_paras(values, names = None):
+    return dict(zip(names or PARAMETERS, values))
 
 # oldsnrkernel
 
