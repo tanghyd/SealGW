@@ -8,7 +8,9 @@ from bilby.gw.conversion import (
 from bilby.gw.source import lal_binary_black_hole, lal_binary_neutron_star
 from scipy.optimize import leastsq
 
-from .generating_data import generate_random_injection_parameters
+from .generating_data import (
+    zip_injection_parameters, generate_random_injection_parameters
+)
 
 # fitting functions
 def select_aij_according_to_snr(file, low, high):
@@ -95,34 +97,8 @@ def para_conversion(d_L, iota, psi, phase):
     return A11, A12, A21, A22
 
 
-def get_inj_paras(
-    parameter_values,
-    parameter_names=[
-        "chirp_mass",
-        "mass_ratio",
-        "a_1",
-        "a_2",
-        "tilt_1",
-        "tilt_2",
-        "phi_12",
-        "phi_jl",
-        "theta_jn",
-        "psi",
-        "phase",
-        "ra",
-        "dec",
-        "luminosity_distance",
-        "geocent_time",
-    ],
-):
-    inj_paras = dict()
-    for i in range(len(parameter_names)):
-        inj_paras[parameter_names[i]] = parameter_values[i]
-    return inj_paras
-
-
 def calculate_snr_kernel(sample_ID, samples, ifos, wave_gen, results):
-    inj_para = get_inj_paras(samples[sample_ID])
+    inj_para = zip_injection_parameters(samples[sample_ID])
     # inj_para = bilby.gw.conversion.generate_all_bbh_parameters(inj_para)
     h_dict = wave_gen.frequency_domain_strain(parameters=inj_para)
 
