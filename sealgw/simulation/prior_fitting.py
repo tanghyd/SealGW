@@ -26,6 +26,7 @@ def select_aij_according_to_snr(file, low, high):
     # put aij together
     return np.array([selected_a11, selected_a12, selected_a21, selected_a22])
 
+
 def f(x, mu, sigma):
     # Normalized Gaussian PDF
     return np.exp(-((x - mu) ** 2) / 2 / sigma**2) / np.sqrt(2 * np.pi) / sigma
@@ -50,7 +51,8 @@ def error_v1new(paras, x, n_i):
 
 
 def bins_to_center_values(bins):
-    return np.array([((bins[i] + bins[i+1]) / 2) for i in range(0, len(bins) - 1)])
+    return np.array([((bins[i] + bins[i + 1]) / 2) for i in range(0, len(bins) - 1)])
+
 
 def ls_fit_bi(snr, samples):  # fit 2 Gaussian prior
     n, bins, patches = plt.hist(samples, bins="auto", density=True)
@@ -90,7 +92,6 @@ def para_conversion(d_L, iota, psi, phase):
 
 def calculate_snr_kernel(sample_ID, samples, ifos, wave_gen, results):
     inj_para = zip_injection_parameters(samples[sample_ID])
-    # inj_para = bilby.gw.conversion.generate_all_bbh_parameters(inj_para)
     h_dict = wave_gen.frequency_domain_strain(parameters=inj_para)
 
     net_snr_sq = 0
