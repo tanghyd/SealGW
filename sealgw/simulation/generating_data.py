@@ -162,11 +162,9 @@ def snr_generator(ifos, waveform_generator, injection_parameter):
             high_frequency_cutoff=det.frequency_array[freq_mask][-1],
         )
 
-        hc_fd = waveform_generator.frequency_domain_strain(injection_parameters_cs)[
-            "plus"
-        ]
+        hc_fd = waveform_generator.frequency_domain_strain(injection_parameters_copy)
         sigma = bilby.gw.utils.noise_weighted_inner_product(
-            hc_fd, hc_fd, det.power_spectral_density_array, det.duration
+            hc_fd["plus"], hc_fd["plus"], det.power_spectral_density_array, det.duration
         )
         sigma = np.sqrt(np.real(sigma))
 
