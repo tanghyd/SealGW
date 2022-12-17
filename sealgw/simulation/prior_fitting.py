@@ -24,13 +24,7 @@ def select_aij_according_to_snr(file, low, high):
     selected_a22 = file[np.where((file[:, 0] >= low) * (file[:, 1] < high))][:, 4]
 
     # put aij together
-    alist = np.array([])
-    alist = np.append(alist, selected_a11)
-    alist = np.append(alist, selected_a12)
-    alist = np.append(alist, selected_a21)
-    alist = np.append(alist, selected_a22)
-    return np.array(alist)
-
+    return np.array([selected_a11, selected_a12, selected_a21, selected_a22])
 
 def f(x, mu, sigma):
     # Normalized Gaussian PDF
