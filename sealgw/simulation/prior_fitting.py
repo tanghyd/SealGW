@@ -8,8 +8,7 @@ from bilby.gw.conversion import (
 from bilby.gw.source import lal_binary_black_hole, lal_binary_neutron_star
 from scipy.optimize import leastsq
 
-from . import generating_data
-
+from .generating_data import generate_random_injection_parameters
 
 # fitting functions
 def select_aij_according_to_snr(file, low, high):
@@ -212,7 +211,7 @@ def get_wave_gen(source_type, fmin, duration, sampling_frequency):
 
 def get_fitting_source_para_sample(source_type, Nsample):
     if source_type == "BNS":
-        samples = generating_data.generate_random_inject_paras(
+        samples = generate_random_injection_parameters(
             Nsample=Nsample,
             dmin=0,
             dmax=200,
@@ -224,7 +223,7 @@ def get_fitting_source_para_sample(source_type, Nsample):
         )
 
     elif source_type == "BBH":
-        samples = generating_data.generate_random_inject_paras(
+        samples = generate_random_injection_parameters(
             Nsample=Nsample,
             dmin=0,
             dmax=4000,
@@ -236,7 +235,7 @@ def get_fitting_source_para_sample(source_type, Nsample):
         )
 
     elif source_type == "NSBH":
-        samples = generating_data.generate_random_inject_paras(
+        samples = generate_random_injection_parameters(
             Nsample=Nsample,
             dmin=0,
             dmax=500,

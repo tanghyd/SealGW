@@ -9,7 +9,8 @@ from pycbc.types.timeseries import TimeSeries
 PARAMETERS = (
     "chirp_mass", "mass_ratio", "a_1", "a_2", "tilt_1", "tilt_2", "phi_12", "phi_jl",
     "theta_jn", "psi", "phase", "ra", "dec", "luminosity_distance", "geocent_time",
-)  # fmt: pass
+)  # fmt: skip
+
 
 def generate_random_spin(Nsample):
     """
@@ -76,7 +77,7 @@ def generate_random_distance(Nsample, low, high):
     return random_dl
 
 
-def generate_random_inject_paras(
+def generate_random_injection_parameters(
     Nsample, dmin, dmax, m1_low, m1_high, q_low, a_max, m2_low, spin_type="aligned"
 ):
 
@@ -87,35 +88,14 @@ def generate_random_inject_paras(
     chirp_mass = conversion.component_masses_to_chirp_mass(mass_1, mass_2)
     mass_ratio = mass_2 / mass_1
 
-    # spin+thetajn:7
-    # if spin_type == 'precessing': # doesn't work for our localization algorithm.
-    #     spin_1x, spin_1y, spin_1z = generate_random_spin(Nsample)
-    #     spin_2x, spin_2y, spin_2z = generate_random_spin(Nsample)
-    #     iota = generate_random_angle(Nsample, 'cos')
-
-    #     fref_list = np.zeros(Nsample)+50.0
-    #     phiref_list = np.zeros(Nsample)
-    #     converted_spin = pespin.spin_angles(
-    #         mass_1,mass_2,iota , spin_1x, spin_1y, spin_1z, spin_2x, spin_2y,spin_2z,
-    #         fref_list,phiref_list
-    #     )
-
-    #     theta_jn = converted_spin[:,0]
-    #     phi_jl = converted_spin[:,1]
-    #     tilt_1 = converted_spin[:,2]
-    #     tilt_2 = converted_spin[:,3]
-    #     phi_12 = converted_spin[:,4]
-    #     a_1 = converted_spin[:,5]
-    #     a_2 = converted_spin[:,6]
-
-    if spin_type == "aligned":
-        a_1 = np.random.uniform(low=0, high=a_max, size=Nsample)
-        a_2 = np.random.uniform(low=0, high=a_max, size=Nsample)
-        phi_jl = np.zeros(Nsample)
-        tilt_1 = np.zeros(Nsample)
-        tilt_2 = np.zeros(Nsample)
-        phi_12 = np.zeros(Nsample)
-        iota = generate_random_angle(Nsample, "cos")
+    assert spin_type == "aligned", "Only aligned spins supported for this algorithm."
+    a_1 = np.random.uniform(low=0, high=a_max, size=Nsample)
+    a_2 = np.random.uniform(low=0, high=a_max, size=Nsample)
+    phi_jl = np.zeros(Nsample)
+    tilt_1 = np.zeros(Nsample)
+    tilt_2 = np.zeros(Nsample)
+    phi_12 = np.zeros(Nsample)
+    iota = generate_random_angle(Nsample, "cos")
 
     # others:6
     psi = generate_random_angle(Nsample, "flat", low=0, high=np.pi)
@@ -125,31 +105,17 @@ def generate_random_inject_paras(
     luminosity_distance = generate_random_distance(Nsample, low=dmin, high=dmax)
     geocent_time = np.random.uniform(low=0, high=3.14e7, size=Nsample)
 
-    para_list = [
-        chirp_mass,
-        mass_ratio,
-        a_1,
-        a_2,
-        tilt_1,
-        tilt_2,
-        phi_12,
-        phi_jl,
-        iota,
-        psi,
-        phase,
-        ra,
-        dec,
-        luminosity_distance,
-        geocent_time,
-    ]
-    samples = np.zeros(shape=(Nsample, len(para_list)))
-    for i in range(len(para_list)):
-        samples[:, i] = para_list[i]
-    return samples
+    parameter_arrays = [
+        chirp_mass, mass_ratio, a_1, a_2, tilt_1, tilt_2, phi_12, phi_jl, iota,
+        psi, phase, ra, dec, luminosity_distance, geocent_time,
+    ]  # fmt: skip
+
+    return np.stack(parameter_arrays, axis=1)
 
 
-def get_injection_parameters(values, names = None):
+def get_injection_parameters(values, names=None):
     return dict(zip(names or PARAMETERS, values))
+
 
 # oldsnrkernel
 
@@ -173,7 +139,7 @@ def snr_generator(ifos, waveform_generator, injection_parameter):
 
     snr_list = []
     sigma_list = []
-    
+
     for det in ifos:
         freq_mask = det.frequency_mask
         delta_t = 1.0 / det.strain_data.sampling_frequency
