@@ -81,13 +81,14 @@ def generate_random_injection_parameters(
     Nsample, dmin, dmax, m1_low, m1_high, q_low, a_max, m2_low, spin_type="aligned"
 ):
 
-    # mass:2
+    # mass: 2 parameters
     mass_1, mass_2 = generate_random_mass(
         Nsample, m1_low=m1_low, m1_high=m1_high, q_low=q_low, m2_low=m2_low
     )
     chirp_mass = conversion.component_masses_to_chirp_mass(mass_1, mass_2)
     mass_ratio = mass_2 / mass_1
 
+    # spin + theta_jn: 7 parameters
     assert spin_type == "aligned", "Only aligned spins supported for this algorithm."
     a_1 = np.random.uniform(low=0, high=a_max, size=Nsample)
     a_2 = np.random.uniform(low=0, high=a_max, size=Nsample)
@@ -97,7 +98,7 @@ def generate_random_injection_parameters(
     phi_12 = np.zeros(Nsample)
     iota = generate_random_angle(Nsample, "cos")
 
-    # others:6
+    # extrinsics: 6 parameters
     psi = generate_random_angle(Nsample, "flat", low=0, high=np.pi)
     phase = generate_random_angle(Nsample, "flat", low=0, high=2 * np.pi)
     ra = generate_random_angle(Nsample, "flat", low=0, high=2 * np.pi)
