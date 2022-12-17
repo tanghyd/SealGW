@@ -86,7 +86,7 @@ class Seal:
 
     def _calculate_snr_kernel(
         self, sample_ID, samples, ifos, waveform_generator, results
-    ):
+    ):LAL_IFO_MAP
         inj_para = zip_injection_parameters(samples[sample_ID])
         # inj_para = bilby.gw.conversion.generate_all_bbh_parameters(inj_para)
         h_dict = waveform_generator.frequency_domain_strain(parameters=inj_para)
@@ -305,7 +305,7 @@ class Seal:
         Ncol,
         nthread,
     ):
-        injection_parameters = get_inj_paras(samples[sample_ID])
+        injection_parameters = zip_injection_parameters(samples[sample_ID])
         ifos = bilby.gw.detector.InterferometerList(det_name_list)
 
         # set detector paramaters
