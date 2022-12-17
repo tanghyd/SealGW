@@ -148,7 +148,7 @@ def generate_random_inject_paras(
     return samples
 
 
-def get_inj_paras(values, names = None):
+def get_injection_parameters(values, names = None):
     return dict(zip(names or PARAMETERS, values))
 
 # oldsnrkernel
@@ -167,24 +167,23 @@ def snr_generator(ifos, waveform_generator, injection_parameter):
     snr_timeseries_list: a list of snr timeseries (pycbc timeseries)
     sigma_list: a list of sigmas
     """
-    injection_parameters_cs = injection_parameter.copy()
-    injection_parameters_cs["theta_jn"] = 0
-    injection_parameters_cs["luminosity_distance"] = 1
+    injection_parameters_copy = injection_parameter.copy()
+    injection_parameters_copy["theta_jn"] = 0
+    injection_parameters_copy["luminosity_distance"] = 1
 
     snr_list = []
     sigma_list = []
-    # for i in range(len(ifos)):
+    
     for det in ifos:
-        # det = ifos[i]
         freq_mask = det.frequency_mask
         delta_t = 1.0 / det.strain_data.sampling_frequency
         delta_f = det.frequency_array[1] - det.frequency_array[0]
         epoch = LIGOTimeGPS(det.strain_data.start_time)
 
         d_pycbc = det.strain_data.to_pycbc_timeseries()
-        hc = waveform_generator.time_domain_strain(injection_parameters_cs)["plus"]
+        hc = waveform_generator.time_domain_strain(injection_parameters_copy)["plus"]
         hc_pycbc = TimeSeries(hc, delta_t=delta_t, epoch=epoch)
-        hc_pycbc.cyclic_time_shift(injection_parameters_cs["geocent_time"])
+        hc_pycbc.cyclic_time_shift(injection_parameters_copy["geocent_time"])
         psd_pycbc = FrequencySeries(
             det.power_spectral_density_array, delta_f=delta_f, epoch=epoch
         )

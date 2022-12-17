@@ -14,7 +14,7 @@ from .calculation.localization import (
     get_det_code_array,
     seal_with_adaptive_healpix,
 )
-from .simulation.generating_data import get_inj_paras, snr_generator
+from .simulation.generating_data import get_injection_parameters, snr_generator
 from .simulation.prior_fitting import (
     bimodal_fitting_plot,
     fitting_abcd,
@@ -87,7 +87,7 @@ class Seal:
     def _calculate_snr_kernel(
         self, sample_ID, samples, ifos, waveform_generator, results
     ):
-        inj_para = get_inj_paras(samples[sample_ID])
+        inj_para = get_injection_parameters(samples[sample_ID])
         # inj_para = bilby.gw.conversion.generate_all_bbh_parameters(inj_para)
         h_dict = waveform_generator.frequency_domain_strain(parameters=inj_para)
 
