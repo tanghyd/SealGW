@@ -180,7 +180,7 @@ def get_wave_gen(source_type, fmin, duration, sampling_frequency):
         )
 
     else:
-        raise ("Source type error!")
+        raise ValueError(f"Invalid source {source_type}! Must be one of BBH, BNS, NSBH")
 
     return waveform_generator
 
@@ -223,7 +223,7 @@ def get_fitting_source_para_sample(source_type, Nsample):
         )
 
     else:
-        raise ("Source type error!")
+        raise ValueError(f"Invalid source {source_type}! Must be one of BBH, BNS, NSBH")
 
     return samples
 
