@@ -50,12 +50,7 @@ def error_v1new(paras, x, n_i):
 
 
 def bins_to_center_values(bins):
-    center_values = []
-    for i in range(0, len(bins) - 1):
-        center_values.append((bins[i] + bins[i + 1]) / 2)
-    center_values = np.array(center_values)
-    return center_values
-
+    return np.array([((bins[i] + bins[i+1]) / 2) for i in range(0, len(bins) - 1)])
 
 def ls_fit_bi(snr, samples):  # fit 2 Gaussian prior
     n, bins, patches = plt.hist(samples, bins="auto", density=True)
