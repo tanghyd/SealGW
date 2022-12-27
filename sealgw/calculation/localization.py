@@ -1,5 +1,5 @@
-import logging
 import ctypes
+import logging
 
 import astropy_healpix as ah
 import healpy as hp
@@ -24,6 +24,7 @@ LAL_DET_MAP = dict(L1=6, H1=5, V1=2, K1=14, I1=15, CE=10, ET1=16, ET2=17, ET3=18
 
 
 logger = logging.getLogger(__name__)
+
 
 def read_event_info(filepath):
     event_info = np.loadtxt(filepath)
@@ -264,7 +265,7 @@ def plot_skymap(skymap, save_filename=None, true_ra=None, true_dec=None):
     probperdeg2 = skymap / deg2perpix
 
     fig = plt.figure(figsize=(10, 6))
-    
+
     # Initialize skymap grid
     ax = plt.axes(projection="astro hours mollweide")
     ax.grid()
