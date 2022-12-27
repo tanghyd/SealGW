@@ -23,8 +23,11 @@ except ModuleNotFoundError as err:
 LAL_DET_MAP = dict(L1=6, H1=5, V1=2, K1=14, I1=15, CE=10, ET1=16, ET2=17, ET3=18)
 
 
+<<<<<<< HEAD
 logger = logging.getLogger(__name__)
 
+=======
+>>>>>>> fe980af (Rerun black and isort)
 def read_event_info(filepath):
     event_info = np.loadtxt(filepath)
     trigger_time = event_info[0]
@@ -285,7 +288,7 @@ def plot_skymap(skymap, save_filename=None, true_ra=None, true_dec=None):
         nested=True,
         linewidths=0.5,
         levels=levels,
-        colors="k"
+        colors="k",
     )
     v = np.linspace(vmin, vmax, 2, endpoint=True)
     cb = plt.colorbar(img, orientation="horizontal", ticks=v, fraction=0.045)
@@ -293,7 +296,9 @@ def plot_skymap(skymap, save_filename=None, true_ra=None, true_dec=None):
 
     text = []
     pp = np.round(levels).astype(int)
-    ii = np.round(np.searchsorted(np.sort(credible_levels), levels) * deg2perpix).astype(int)
+    ii = np.round(
+        np.searchsorted(np.sort(credible_levels), levels) * deg2perpix
+    ).astype(int)
     for i, p in zip(ii, pp):
         text.append("{:d}% area: {:,d} deg²".format(p, i))
     ax.text(1, 1, "\n".join(text), transform=ax.transAxes, ha="right")

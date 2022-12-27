@@ -9,8 +9,10 @@ from bilby.gw.source import lal_binary_black_hole, lal_binary_neutron_star
 from scipy.optimize import leastsq
 
 from .generating_data import (
-    zip_injection_parameters, generate_random_injection_parameters
+    generate_random_injection_parameters,
+    zip_injection_parameters,
 )
+
 
 # fitting functions
 def select_aij_according_to_snr(file, low, high):

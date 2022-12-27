@@ -14,7 +14,7 @@ from .calculation.localization import (
     get_det_code_array,
     seal_with_adaptive_healpix,
 )
-from .simulation.generating_data import zip_injection_parameters, snr_generator
+from .simulation.generating_data import snr_generator, zip_injection_parameters
 from .simulation.prior_fitting import (
     bimodal_fitting_plot,
     fitting_abcd,
