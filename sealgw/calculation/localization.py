@@ -290,13 +290,11 @@ def plot_skymap(skymap, save_filename=None, true_ra=None, true_dec=None):
     cb = fig.colorbar(img, orientation="horizontal", ticks=v, fraction=0.045, ax=ax)
     cb.set_label(r"probability per deg$^2$", fontsize=11)
 
-    text = []
     pp = np.round(levels).astype(int)
     ii = np.round(
         np.searchsorted(np.sort(credible_levels), levels) * deg2perpix
     ).astype(int)
-    for i, p in zip(ii, pp):
-        text.append("{:d}% area: {:,d} deg²".format(p, i))
+    text = [f"{p:d}% area: {i:,d} deg²" for i, p in zip(ii, pp)]
     ax.text(1, 1, "\n".join(text), transform=ax.transAxes, ha="right")
 
     if save_filename is not None:
