@@ -257,8 +257,7 @@ def plot_skymap(
     import spiir.search.skymap
 
     # normalise probability skymap
-    skymap = np.exp(log_probs - max(log_probs))
-    skymap /= sum(skymap)
+    skymap = normalize_log_probabilities(log_probs)
 
     # add ground truth marker if both ra and dec are not None
     ground_truth = None
@@ -280,16 +279,21 @@ def plot_skymap(
     return fig
 
 
-def confidence_area(skymap, confidence_level):
+def normalize_log_probabilities(log_probs: np.ndarray) -> np.ndarray:
+    """Converts log probabilities into a normalized probability array."""
+    probs = np.exp(log_probs - max(log_probs))
+    probs /= sum(probs)
+    return probs
+
+
+def confidence_area(log_probs, confidence_level):
     """
     skymap: log prob skymap
     confidence_level: float or array
 
     returns confidence area at given confidence lvel.
     """
-    skymap = skymap - max(skymap)
-    skymap = np.exp(skymap)
-    skymap /= sum(skymap)
+    skymap = normalize_log_probabilities(log_probs)
 
     nside = ah.npix_to_nside(len(skymap))
     deg2perpix = ah.nside_to_pixel_area(nside).to_value(u.deg**2)
@@ -300,7 +304,7 @@ def confidence_area(skymap, confidence_level):
     return area
 
 
-def cumulative_percentage(skymap, ra, dec):
+def cumulative_percentage(log_probs, ra, dec):
     """
     Find cumulative percentage at (ra, dec).
 
@@ -308,9 +312,7 @@ def cumulative_percentage(skymap, ra, dec):
 
     When reach the lowest prob pixel, prob accumulate to one.
     """
-    skymap = skymap - max(skymap)
-    skymap = np.exp(skymap)
-    skymap /= sum(skymap)
+    skymap = normalize_log_probabilities(log_probs)
 
     theta = np.pi / 2 - dec
     phi = ra
@@ -326,15 +328,13 @@ def cumulative_percentage(skymap, ra, dec):
     return percentage
 
 
-def search_area(skymap, ra, dec):
+def search_area(log_probs, ra, dec):
     """
     Find cumulative search area at (ra, dec), search from the highest pixel.
 
     When reach the lowest prob pixel, prob accumulate to one.
     """
-    skymap = skymap - max(skymap)
-    skymap = np.exp(skymap)
-    skymap /= sum(skymap)
+    skymap = normalize_log_probabilities(log_probs)
 
     nside = ah.npix_to_nside(len(skymap))
     deg2perpix = ah.nside_to_pixel_area(nside).to_value(u.deg**2)
@@ -351,14 +351,11 @@ def search_area(skymap, ra, dec):
     return area
 
 
-def catalog_test_statistics(skymap, ra_inj, dec_inj):
+def catalog_test_statistics(log_probs, ra_inj, dec_inj):
     """
     return all statistics that catalog test needs.
     """
-
-    skymap = skymap - max(skymap)
-    skymap = np.exp(skymap)
-    skymap /= sum(skymap)
+    skymap = normalize_log_probabilities(log_probs)
 
     nside = ah.npix_to_nside(len(skymap))
     deg2perpix = ah.nside_to_pixel_area(nside).to_value(u.deg**2)
