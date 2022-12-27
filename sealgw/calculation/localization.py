@@ -1,5 +1,6 @@
 import ctypes
 import logging
+from typing import Optional
 
 import astropy_healpix as ah
 import healpy as hp
@@ -9,16 +10,12 @@ import scipy
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 from ligo.skymap import postprocess
+from matplotlib import figure as Figure
 from matplotlib import pyplot as plt
 
 import sealcore
 
 # export OMP_NUM_THREADS=8
-
-try:
-    import spiir.io.ligolw
-except ModuleNotFoundError as err:
-    pass
 
 LAL_DET_MAP = dict(L1=6, H1=5, V1=2, K1=14, I1=15, CE=10, ET1=16, ET2=17, ET3=18)
 
@@ -38,6 +35,8 @@ def read_event_info(filepath):
 
 
 def extract_info_from_xml(filepath, return_names=False):
+    import spiir.io.ligolw
+
     xmlfile = spiir.io.ligolw.load_coinc_xml(filepath)
 
     try:
@@ -248,59 +247,37 @@ def get_det_code_array(det_name_list):
     return np.array([LAL_DET_MAP[det] for det in det_name_list])
 
 
-def plot_skymap(skymap, save_filename=None, true_ra=None, true_dec=None):
-    """Input: log_prob_density_skymap"""
-    skymap = skymap - max(skymap)
-    skymap = np.exp(skymap)
+def plot_skymap(
+    log_probs: np.ndarray,
+    save_filename: Optional[str] = None,
+    true_ra: float = None,
+    true_dec: float = None,
+) -> Figure:
+    """Plots a localisation skymap using from a log probability density array."""
+    import spiir.search.skymap
+
+    # normalise probability skymap
+    skymap = np.exp(log_probs - max(log_probs))
     skymap /= sum(skymap)
 
-    npix = len(skymap)
-    # nside = int(np.sqrt(npix/12.0))
-    nside = ah.npix_to_nside(npix)
+    # add ground truth marker if both ra and dec are not None
+    ground_truth = None
+    if true_ra is not None and true_dec is not None:
+        ground_truth = (true_ra, true_dec)
 
-    levels = [50, 90]
-
-    # Convert sky map from probability to probability per square degree.
-    deg2perpix = ah.nside_to_pixel_area(nside).to_value(u.deg**2)
-    probperdeg2 = skymap / deg2perpix
-
-    fig = plt.figure(figsize=(10, 6))
-
-    # Initialize skymap grid
-    ax = plt.axes(projection="astro hours mollweide")
-    ax.grid()
-    if (true_ra is not None) and (true_dec is not None):
-        ax.plot_coord(
-            SkyCoord(true_ra, true_dec, unit="rad"), "x", color="green", markersize=8
-        )
-
-    # Plot skymap with labels
-    vmax = probperdeg2.max()
-    vmin = probperdeg2.min()
-    img = ax.imshow_hpx(probperdeg2, cmap="cylon", nested=True, vmin=vmin, vmax=vmax)
-
-    credible_levels = 100 * postprocess.find_greedy_credible_levels(skymap)
-    ax.contour_hpx(
-        (credible_levels, "ICRS"),
-        nested=True,
-        linewidths=0.5,
-        levels=levels,
-        colors="k",
+    fig = spiir.search.skymap.plot_skymap(
+        skymap,
+        contours=[50, 90],
+        ground_truth=ground_truth,
+        colorbar=True,
+        figsize=(10, 6),
     )
-    v = np.linspace(vmin, vmax, 2, endpoint=True)
-    cb = fig.colorbar(img, orientation="horizontal", ticks=v, fraction=0.045, ax=ax)
-    cb.set_label(r"probability per deg$^2$", fontsize=11)
-
-    pp = np.round(levels).astype(int)
-    ii = np.round(
-        np.searchsorted(np.sort(credible_levels), levels) * deg2perpix
-    ).astype(int)
-    text = [f"{p:d}% area: {i:,d} deg²" for i, p in zip(ii, pp)]
-    ax.text(1, 1, "\n".join(text), transform=ax.transAxes, ha="right")
 
     if save_filename is not None:
         fig.savefig(save_filename)
         logger.info(f"Skymap saved to {save_filename}")
+
+    return fig
 
 
 def confidence_area(skymap, confidence_level):
