@@ -23,11 +23,8 @@ except ModuleNotFoundError as err:
 LAL_DET_MAP = dict(L1=6, H1=5, V1=2, K1=14, I1=15, CE=10, ET1=16, ET2=17, ET3=18)
 
 
-<<<<<<< HEAD
 logger = logging.getLogger(__name__)
 
-=======
->>>>>>> fe980af (Rerun black and isort)
 def read_event_info(filepath):
     event_info = np.loadtxt(filepath)
     trigger_time = event_info[0]
