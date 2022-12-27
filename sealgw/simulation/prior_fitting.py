@@ -55,6 +55,7 @@ def bins_to_center_values(bins):
 
 
 def ls_fit_bi(snr, samples):  # fit 2 Gaussian prior
+    # TODO: histograms should be computed with numpy instead of matplotlib
     n, bins, patches = plt.hist(samples, bins="auto", density=True)
     x = bins_to_center_values(bins)
     mu_init, sigma_init = initial_estimate(snr)
@@ -113,6 +114,8 @@ def fitting_abcd(simulation_result, snr_steps):
         Aijs = select_aij_according_to_snr(
             simulation_result, snr_step - 1, snr_step + 1
         )
+
+        # TODO: histograms should be computed with numpy instead of matplotlib
         n, bins, patches = plt.hist(Aijs, bins="auto", density=True)
         n_list.append(n)
         bin_list.append(bins)
@@ -225,45 +228,43 @@ def linear_fitting_plot(snr_steps, mu_list, sigma_list, a, b, c, d, save_filenam
     ticksize = 18
     legendsize = "large"
 
-    plt.figure(figsize=(10, 7.5))
-    plt.rcParams.update({"font.size": 16})
+    fig, ax = plt.subplots(figsize=(10, 7.5))
 
     # plt.text(7.8, 9.5, r'x 10$^{-3}$',fontsize=16)
-    plt.yticks(size=ticksize)
-    plt.xticks(size=ticksize)
-    plt.scatter(
+    ax.set_yticks(size=ticksize)
+    ax.set_xticks(size=ticksize)
+    ax.scatter(
         snr_steps,
         1e3 * np.array(mu_list),
         marker="x",
         color="orangered",
         label=r"$\mu$",
     )
-    plt.plot(
+    ax.plot(
         snr_steps,
         1e3 * (a * snr_steps + b),
         color="royalblue",
         label=r"Linear fitting of $\mu$",
     )
-    plt.scatter(
+    ax.scatter(
         snr_steps,
         1e3 * np.array(sigma_list),
         marker="o",
         color="darkorange",
         label=r"$\sigma$",
     )
-    plt.plot(
+    ax.plot(
         snr_steps,
         1e3 * (c * snr_steps + d),
         color="forestgreen",
         label=r"Linear fitting of $\sigma$",
     )
-    plt.xlabel("Signal-to-noise Ratio", size=labelsize)
-    plt.ylabel(r"$\mu, \sigma \times$ 1000", size=labelsize)
-    plt.legend(loc="best", ncol=2, fontsize=legendsize)
-    plt.grid()
+    ax.set_xlabel("Signal-to-noise Ratio", size=labelsize)
+    ax.set_ylabel(r"$\mu, \sigma \times$ 1000", size=labelsize)
+    ax.legend(loc="best", ncol=2, fontsize=legendsize)
+    ax.grid()
 
-    plt.savefig(save_filename)
-    # plt.show()
+    fig.savefig(save_filename)
 
 
 def bimodal_fitting_plot(result, a, b, c, d, save_filename):
@@ -272,32 +273,33 @@ def bimodal_fitting_plot(result, a, b, c, d, save_filename):
     legendsize = "x-large"
 
     A_range = np.linspace(-0.04, 0.04, 200)
-    plt.figure(figsize=(14, 10))
     color_bar = "cornflowerblue"
     color_line = "red"
     test_snr_low = [12, 16, 20, 24]
     test_snr_high = [16, 20, 24, 30]
-    for i in [1, 2, 3, 4]:
-        plt.subplot(2, 2, i)
-        plt.yticks(size=ticksize)
-        plt.xticks(size=ticksize)
+
+    nrows, ncols = 2, 2
+    fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(14, 10))
+    for i in range(4):
+        ax = axes[i // ncols, i % ncols]
+        ax.set_yticks(size=ticksize)
+        ax.set_xticks(size=ticksize)
         snr_low = test_snr_low[i - 1]
         snr_high = test_snr_high[i - 1]
         snr_middle = (snr_high + snr_low) / 2
         mu = a * snr_middle + b
         sigma = c * snr_middle + b
         theo_pdf = (f(A_range, mu, sigma) + f(A_range, -mu, sigma)) / 2
-        plt.hist(
+        ax.hist(
             select_aij_according_to_snr(result, snr_low, snr_high),
             bins="auto",
             density=True,
             label="SNR {}-{}".format(snr_low, snr_high),
             color=color_bar,
         )
-        plt.plot(A_range, theo_pdf, color=color_line)
-        plt.ylabel("Probability density", size=labelsize)
-        plt.xlim(-0.05, 0.05)
-        plt.legend(loc="best", fontsize=legendsize)
+        ax.plot(A_range, theo_pdf, color=color_line)
+        ax.set_ylabel("Probability density", size=labelsize)
+        ax.set_xlim(-0.05, 0.05)
+        ax.legend(loc="best", fontsize=legendsize)
 
-    plt.savefig(save_filename)
-    # plt.show()
+    fig.savefig(save_filename)
