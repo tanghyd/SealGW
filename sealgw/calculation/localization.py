@@ -263,8 +263,8 @@ def plot_skymap(skymap, save_filename=None, true_ra=None, true_dec=None):
     deg2perpix = ah.nside_to_pixel_area(nside).to_value(u.deg**2)
     probperdeg2 = skymap / deg2perpix
 
-    plt.figure(figsize=(10, 6))
-    # plt.figure()
+    fig = plt.figure(figsize=(10, 6))
+    
     # Initialize skymap grid
     ax = plt.axes(projection="astro hours mollweide")
     ax.grid()
@@ -287,7 +287,7 @@ def plot_skymap(skymap, save_filename=None, true_ra=None, true_dec=None):
         colors="k",
     )
     v = np.linspace(vmin, vmax, 2, endpoint=True)
-    cb = plt.colorbar(img, orientation="horizontal", ticks=v, fraction=0.045)
+    cb = fig.colorbar(img, orientation="horizontal", ticks=v, fraction=0.045, ax=ax)
     cb.set_label(r"probability per deg$^2$", fontsize=11)
 
     text = []
@@ -300,7 +300,7 @@ def plot_skymap(skymap, save_filename=None, true_ra=None, true_dec=None):
     ax.text(1, 1, "\n".join(text), transform=ax.transAxes, ha="right")
 
     if save_filename is not None:
-        plt.savefig(save_filename)
+        fig.savefig(save_filename)
         logger.info(f"Skymap saved to {save_filename}")
 
 
