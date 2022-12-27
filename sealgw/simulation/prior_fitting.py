@@ -294,7 +294,7 @@ def bimodal_fitting_plot(result, a, b, c, d, save_filename):
             select_aij_according_to_snr(result, snr_low, snr_high),
             bins="auto",
             density=True,
-            label="SNR {}-{}".format(snr_low, snr_high),
+            label=f"SNR {snr_low}-{snr_high}",
             color=color_bar,
         )
         ax.plot(A_range, theo_pdf, color=color_line)
